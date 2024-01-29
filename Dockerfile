@@ -31,7 +31,7 @@ LABEL org.opencontainers.image.source="https://github.com/jammsen/docker-palworl
 COPY --from=build /tmp/install /
 
 RUN apt-get update
-RUN apt-get install -y --no-install-recommends --no-install-suggests procps xdg-user-dirs
+RUN apt-get install -y --no-install-recommends --no-install-suggests procps xdg-user-dirs curl
 RUN apt-get clean
 RUN apt-get autoremove -y
 RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
