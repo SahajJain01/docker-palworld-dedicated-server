@@ -27,18 +27,18 @@ LABEL org.opencontainers.image.source="https://github.com/jammsen/docker-palworl
 
 COPY --from=build /tmp/install /
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends --no-install-suggests procps xdg-user-dirs \
-    && apt-get clean \
-    && apt-get autoremove -y \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends --no-install-suggests procps xdg-user-dirs
+RUN apt-get clean
+RUN apt-get autoremove -y
+RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN dpkg --add-architecture armhf && \
-    apt-get update && \
-    apt-get install --yes --no-install-recommends libc6:armhf libstdc++6:armhf && \
-    apt-get -y autoremove && \
-    apt-get clean autoclean && \
-    rm -rf /tmp/* /var/tmp/* /var/lib/apt/lists
+RUN dpkg --add-architecture armhf
+RUN apt-get update
+RUN apt-get install --yes --no-install-recommends libc6:armhf libstdc++6:armhf
+RUN apt-get -y autoremove
+RUN apt-get clean autoclean
+RUN rm -rf /tmp/* /var/tmp/* /var/lib/apt/lists
 
 # Latest releases available at https://github.com/aptible/supercronic/releases
 ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.2.29/supercronic-linux-amd64 \
