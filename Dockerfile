@@ -28,6 +28,35 @@ ENV HOME /root
 LABEL org.opencontainers.image.authors="Sebastian Schmidt"
 LABEL org.opencontainers.image.source="https://github.com/jammsen/docker-palworld-dedicated-server"
 
+COPY --from=build /tmp/install /
+
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends --no-install-suggests procps xdg-user-dirs
+RUN apt-get clean
+RUN apt-get autoremove -y
+RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+RUN dpkg --add-architecture armhf
+RUN apt-get update
+RUN apt-get install --yes --no-install-recommends libc6:armhf libstdc++6:armhf
+RUN apt-get -y autoremove
+RUN apt-get clean autoclean
+RUN rm -rf /tmp/* /var/tmp/* /var/lib/apt/lists
+
+# Latest releases available at https://github.com/aptible/supercronic/releases
+ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.2.29/supercronic-linux-amd64 \
+    SUPERCRONIC=supercronic-linux-amd64 \
+    SUPERCRONIC_SHA1SUM=cd48d45c4b10f3f0bfdd3a57d054cd05ac96812b
+
+RUN curl -fsSLO "$SUPERCRONIC_URL" \
+    && echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -c - \
+    && chmod +x "$SUPERCRONIC" \
+    && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
+    && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
+
+ADD --chown=steam:steam --chmod=755 servermanager.sh /servermanager.sh
+ADD --chown=steam:steam --chmod=755 backupmanager.sh /backupmanager.sh
+
 # Set working directory
 WORKDIR $HOME
 
@@ -63,34 +92,6 @@ RUN mkdir -p $HOME/.steam \
  && ln -s $HOME/.steam/sdk32/steamclient.so $HOME/.steam/sdk32/steamservice.so \
  && ln -s $HOME/.steam/sdk64/steamclient.so $HOME/.steam/sdk64/steamservice.so
 
-COPY --from=build /tmp/install /
-
-RUN apt-get update
-RUN apt-get install -y --no-install-recommends --no-install-suggests procps xdg-user-dirs
-RUN apt-get clean
-RUN apt-get autoremove -y
-RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-RUN dpkg --add-architecture armhf
-RUN apt-get update
-RUN apt-get install --yes --no-install-recommends libc6:armhf libstdc++6:armhf
-RUN apt-get -y autoremove
-RUN apt-get clean autoclean
-RUN rm -rf /tmp/* /var/tmp/* /var/lib/apt/lists
-
-# Latest releases available at https://github.com/aptible/supercronic/releases
-ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.2.29/supercronic-linux-amd64 \
-    SUPERCRONIC=supercronic-linux-amd64 \
-    SUPERCRONIC_SHA1SUM=cd48d45c4b10f3f0bfdd3a57d054cd05ac96812b
-
-RUN curl -fsSLO "$SUPERCRONIC_URL" \
-    && echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -c - \
-    && chmod +x "$SUPERCRONIC" \
-    && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
-    && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
-
-ADD --chown=steam:steam --chmod=755 servermanager.sh /servermanager.sh
-ADD --chown=steam:steam --chmod=755 backupmanager.sh /backupmanager.sh
 
 EXPOSE 8211/udp
 EXPOSE 25575/tcp
