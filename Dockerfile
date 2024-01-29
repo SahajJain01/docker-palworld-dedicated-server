@@ -20,7 +20,7 @@ RUN cmake .. -DRPI4ARM64=1 -DARM_DYNAREC=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo &&
     make -j$(nproc) && \
     make install DESTDIR=/tmp/install
 
-FROM --platform=linux/amd64 cm2network/steamcmd:root
+FROM cm2network/steamcmd:root
 
 LABEL org.opencontainers.image.authors="Sebastian Schmidt"
 LABEL org.opencontainers.image.source="https://github.com/jammsen/docker-palworld-dedicated-server"
