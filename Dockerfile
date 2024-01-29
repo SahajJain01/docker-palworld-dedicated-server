@@ -83,7 +83,7 @@ ENV LANGUAGE 'en_US:en'
 RUN ln -s /usr/games/steamcmd /usr/bin/steamcmd
 
 # Update SteamCMD and verify latest version
-RUN steamcmd +quit
+RUN box64 steamcmd +quit
 
 # Fix missing directories and libraries
 RUN mkdir -p $HOME/.steam \
